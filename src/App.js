@@ -26,7 +26,7 @@ function App() {
 
       const callUpdateAPI = async () => {
         try {
-          const response = await fetch("http://localhost:5713/api/v1/payment/update-status", {
+          const response = await fetch("https://api.realbdgame.com/api/v1/payment/update-status", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
