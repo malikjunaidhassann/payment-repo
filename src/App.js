@@ -6,6 +6,7 @@ function App() {
   const location = useLocation();
   const hasFetched = useRef(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(false);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -25,7 +26,7 @@ function App() {
 
       const callUpdateAPI = async () => {
         try {
-          const response = await fetch("https://api.realbdgame.com/api/v1/payment/update-status", {
+          const response = await fetch("http://localhost:5713/api/v1/payment/update-status", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -34,31 +35,30 @@ function App() {
           });
 
           const result = await response.json();
-
-          const { res, error } = result;
-
-          await fetch("https://api.realbdgame.com/open-app", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ packageName: "com.DefaultCompany.Carrom" }),
-          });
-
-          if (error) {
-            setError(error);
-            console.error("Error:", error);
+          console.log({ result });
+          if (result.success) {
+            setSuccessMessage(true);
           } else {
-            console.log("Response:", res);
+            setError(result.message);
           }
+
+          // await fetch("https://api.realbdgame.com/open-app", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({ packageName: "com.DefaultCompany.Carrom" }),
+          // });
         } catch (err) {
-          console.error("API call failed:", err);
+          console.log("API call failed:", err);
         }
       };
 
       callUpdateAPI();
     }
   }, [location.search]);
+
+  console.log({ error });
 
   return (
     <div
@@ -69,8 +69,9 @@ function App() {
         height: "100vh",
       }}
     >
-      <h1 className="dot-animate">Payment Completing, wait for a moment</h1>
-      {error && <p>{error}</p>}
+      {!successMessage && !error && <h1 className="dot-animate">Payment Completing, wait for a moment</h1>}
+      {successMessage && "Payment Added Successfully. Get back to the game"}
+      {error && <p>{error}. Get back to the game</p>}
     </div>
   );
 }
